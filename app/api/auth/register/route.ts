@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { api } from '../../api';
+import { api, ApiError } from '../../api';
 import { cookies } from 'next/headers';
 import { parse } from 'cookie';
-import { isAxiosError } from 'axios';
-import { logErrorResponse } from '../../_utils/utils';
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
+
+    console.log('Register body:', body);
 
     const apiRes = await api.post('auth/register', body);
 
@@ -32,14 +32,11 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   } catch (error) {
-    if (isAxiosError(error)) {
-      logErrorResponse(error.response?.data);
-      return NextResponse.json(
-        { error: error.message, response: error.response?.data },
-        { status: error.status }
-      );
-    }
-    logErrorResponse({ message: (error as Error).message });
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: (error as ApiError).response?.data?.error ?? (error as ApiError).message,
+      },
+      { status: (error as ApiError).status }
+    )
   }
 }

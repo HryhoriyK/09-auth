@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { api } from '../../api';
+import { api, ApiError } from '../../api';
 import { parse } from 'cookie';
-import { isAxiosError } from 'axios';
-import { logErrorResponse } from '../../_utils/utils';
 
 export async function GET() {
   try {
@@ -43,14 +41,11 @@ export async function GET() {
     }
     return NextResponse.json({ error: 'Invalid or expired refresh token' }, { status: 401 });
   } catch (error) {
-    if (isAxiosError(error)) {
-      logErrorResponse(error.response?.data);
-      return NextResponse.json(
-        { error: error.message, response: error.response?.data },
-        { status: error.status }
-      );
-    }
-    logErrorResponse({ message: (error as Error).message });
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: (error as ApiError).response?.data?.error ?? (error as ApiError).message,
+      },
+      { status: (error as ApiError).status }
+    )
   }
 }
