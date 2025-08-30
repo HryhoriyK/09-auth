@@ -1,10 +1,10 @@
 import Link from 'next/link';
 import css from './default.module.css';
-import { getTags } from '../../../../lib/api';
+import { staticTags } from '@/lib/constants';
 
 const NotesSidebar = async () => {
   const menuItems = ["All", "Todo", "Work", "Personal", "Meeting", "Shopping"];
-  const tags = await getTags();
+  const tags = staticTags;
 
   return (
     <div className={css.menuContainer}>

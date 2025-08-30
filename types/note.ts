@@ -1,18 +1,22 @@
+export type Tag = "Todo" | "Work" | "Personal" | "Meeting" | "Shopping";
+
 export interface Note {
   id: string;
   title: string;
   content: string;
-  tag: NoteTag;
+  tag: Tag;
   createdAt: string;
-  updatedAt: string; 
+  updatedAt?: string; 
 }
 
-export const NoteTag = {
-  Todo: 'Todo',
-  Work: 'Work',
-  Personal: 'Personal',
-  Meeting: 'Meeting',
-  Shopping: 'Shopping',
-} as const;
+export interface NewNote {
+  title: string;
+  content: string;
+  tag: Tag;
+}
 
-export type NoteTag = typeof NoteTag[keyof typeof NoteTag];
+export interface FetchNotesProps {
+  notes: Note[];
+  totalPages: number;
+  currentPage: number;
+}

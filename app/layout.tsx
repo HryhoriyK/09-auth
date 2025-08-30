@@ -1,41 +1,32 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import { Roboto } from "next/font/google";
 import "./globals.css";
-import Header from "../components/Header/Header";
-import Footer from "../components/Footer/Footer";
+import Header from "@/components/Header/Header";
 import TanStackProvider from "../components/TanStackProvider/TanStackProvider";
+import Footer from "@/components/Footer/Footer";
+import AuthProvider from "@/components/AuthProvider/AuthProvider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 const roboto = Roboto({
-  weight: ["400", "700"],
-  variable: "--font-roboto",
-  display: "swap",
-  subsets: ["latin"],
+  weight: ['400', '600'],
+  subsets: ['latin'],
+  variable: '--font-roboto',
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
-  title: "NoteHub",
-  description: "NoteHub is a modern note-taking application for organizing your thoughts and ideas.",
+  title: 'NoteHub',
+  description: 'NoteHub – your smart notebook for notes, tasks and ideas',
   openGraph: {
-    title: "NoteHub",
-    description: "NoteHub is a modern note-taking application for organizing your thoughts and ideas.",
-    url: "https://notehub.example.com",
+    title: 'NoteHub',
+    description: 'NoteHub – a simple app for writing notes',
+    url: 'https://08-zustand-tawny.vercel.app',
     images: [
       {
-        url: "https://ac.goit.global/fullstack/react/notehub-og-meta.jpg",
+        url: 'https://ac.goit.global/fullstack/react/notehub-og-meta.jpg',
         width: 1200,
         height: 630,
-        alt: "NoteHub Open Graph Image",
+        alt: 'NoteHub App',
       },
     ],
   },
@@ -44,20 +35,25 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
   modal,
-}: Readonly<{
+}: {
   children: React.ReactNode;
   modal: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} ${roboto.variable}`}>
-        <TanStackProvider>
-          <Header></Header>
-          {children}
-          {modal}
-        <div id="modal-root" />
-          <Footer></Footer>
-        </TanStackProvider>
+      <body className={`${roboto.variable}`}>
+        <div>
+          <TanStackProvider>
+            <AuthProvider>
+            <Header />
+            <main className="main">
+              {children}
+              {modal}
+            </main>
+            <Footer />
+            </AuthProvider>
+          </TanStackProvider>
+        </div>
       </body>
     </html>
   );

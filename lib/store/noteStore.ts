@@ -1,11 +1,18 @@
+import { Tag } from '@/types/note';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-interface DraftNote {
+export type DraftNote = {
   title: string;
-  content: string;
-  tag: string;
-}
+  content?: string;
+  tag: Tag;
+};
+
+type NoteDraftStore = {
+  draft: DraftNote;
+  setDraft: (note: DraftNote) => void;
+  clearDraft: () => void;
+};
 
 const initialDraft: DraftNote = {
   title: '',
@@ -13,21 +20,16 @@ const initialDraft: DraftNote = {
   tag: 'Todo',
 };
 
-interface NoteStoreState {
-  draft: DraftNote;
-  setDraft: (note: Partial<DraftNote>) => void;
-  clearDraft: () => void;
-}
-
-export const useNoteStore = create<NoteStoreState>()(
+export const useNoteDraftStore = create<NoteDraftStore>()(
   persist(
     (set) => ({
       draft: initialDraft,
-      setDraft: (note) => set((state) => ({ draft: { ...state.draft, ...note } })),
+      setDraft: (note) => set({ draft: note }),
       clearDraft: () => set({ draft: initialDraft }),
     }),
     {
-      name: 'notehub-draft-storage',
-    },
-  ),
+      name: 'note-draft',
+      partialize: (store) => ({ draft: store.draft }),
+    }
+  )
 );

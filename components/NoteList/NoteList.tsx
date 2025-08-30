@@ -1,44 +1,44 @@
-'use client';
-
-import Link from 'next/link';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { deleteNote } from '../../lib/api';
 import type { Note } from '../../types/note';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import css from './NoteList.module.css';
+import { deleteNote } from '@/lib/api/clientApi';
+import Link from 'next/link';
 
 interface NoteListProps {
   notes: Note[];
 }
 
-export const NoteList = ({ notes }: NoteListProps) => {
+const NoteList = ({ notes }: NoteListProps) => {
   const queryClient = useQueryClient();
 
-  const { mutate: removeNote, isPending } = useMutation({
+  const mutation = useMutation({
     mutationFn: deleteNote,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notes'] });
     },
   });
 
+  const handleDelete = (id: string) => {
+    mutation.mutate(id);
+  };
+
+  if (!notes || notes.length === 0) {
+    return <p className={css.message}>No notes found.</p>;
+  }
+
   return (
     <ul className={css.list}>
-      {notes.map(({ id, title, content, tag }) => (
-        <li key={id} className={css.listItem}>
-          <h3 className={css.title}>{title}</h3>
-          <p className={css.content}>{content}</p>
+      {notes.map((note) => (
+        <li key={note.id} className={css.listItem}>
+          <h2 className={css.title}>{note.title}</h2>
+          <p className={css.content}>{note.content}</p>
           <div className={css.footer}>
-            <span className={css.tag}>{tag}</span>
-
-            <Link href={`/notes/${id}`} className={css.link}>
+            <span className={css.tag}>{note.tag}</span>
+            <Link className={css.link} href={`/notes/${note.id}`}>
               View details
             </Link>
-
-            <button
-              className={css.button}
-              onClick={() => removeNote(id)}
-              disabled={isPending}
-            >
-              {isPending ? 'Deleting...' : 'Delete'}
+            <button className={css.button} onClick={() => handleDelete(note.id)}>
+              {mutation.isPending ? 'Deleting...' : 'Delete'}
             </button>
           </div>
         </li>
@@ -46,3 +46,5 @@ export const NoteList = ({ notes }: NoteListProps) => {
     </ul>
   );
 };
+
+export default NoteList;

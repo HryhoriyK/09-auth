@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { createNote, Tag, CreateNoteParams } from '@/lib/api';
+import { createNote, Tag, CreateNoteParams } from '@/lib/api/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNoteStore } from '@/lib/store/noteStore';
 import css from './NoteForm.module.css';

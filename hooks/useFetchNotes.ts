@@ -1,6 +1,6 @@
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
-import { fetchNotes } from '../lib/api';
-import type { FetchNotesResponse } from '../lib/api';
+import { fetchNotes } from '../lib/api/api';
+import type { FetchNotesResponse } from '../lib/api/api';
 
 export const useFetchNotes = (
   currentPage: number,

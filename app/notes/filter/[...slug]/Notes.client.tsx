@@ -1,65 +1,63 @@
 'use client';
 
 import { useState } from 'react';
-import { useDebounce } from '../../../../hooks/useDebounce';
-import { useQuery } from '@tanstack/react-query';
-import { fetchNotes } from '../../../../lib/api';
-import type { FetchNotesResponse } from '../../../../lib/api';
+import { useDebounce } from '@/hooks/useDebounce';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
+import { fetchNotes } from '@/lib/api/clientApi';
+import type { FetchNotesProps } from '@/types/note';
 
-import { SearchBox } from '../../../../components/SearchBox/SearchBox';
-import { Pagination } from '../../../../components/Pagination/Pagination';
-import { NoteList } from '../../../../components/NoteList/NoteList';
-import Link from 'next/link';
+import NoteList from '@/components/NoteList/NoteList';
+import Pagination from '@/components/Pagination/Pagination';
+import SearchBox from '@/components/SearchBox/SearchBox';
 
 import css from './page.module.css';
+import Link from 'next/link';
 
-interface NotesProps {
-  initialData: FetchNotesResponse;
+type Props = {
+  initialData: FetchNotesProps;
   tag?: string;
-}
+};
 
-export default function Notes({ initialData, tag }: NotesProps) {
+const PER_PAGE = 12;
+
+export default function NotesClient({ initialData, tag }: Props) {
+  const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
-  const debouncedSearch = useDebounce(search, 300);
-  const [currentPage, setCurrentPage] = useState(1);
+  const debouncedSearch = useDebounce(search, 500);
 
-  const perPage = 12;
-
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ['notes', currentPage, debouncedSearch, tag],
-    queryFn: () => fetchNotes(currentPage, perPage, tag, debouncedSearch),
+   const { data } = useQuery<FetchNotesProps>({
+    queryKey: ['notes', page, debouncedSearch, tag],
+    queryFn: () =>
+      fetchNotes({
+        page,
+        perPage: PER_PAGE,
+        search: debouncedSearch || undefined,
+        tag,
+      }),
+    placeholderData: keepPreviousData,
     initialData,
-    placeholderData: initialData,
   });
+
+   const totalPages = data?.totalPages ?? 1;
 
   return (
     <div className={css.app}>
       <header className={css.toolbar}>
-        <SearchBox
-          value={search}
-          onChange={(value) => {
-            setSearch(value);
-            setCurrentPage(1);
-          }}
-        />
-
-        {data?.totalPages && data.totalPages > 1 && (
+        <SearchBox value={search} onChange={(e) => {
+          setSearch(e.target.value);
+          setPage(1);
+        }} />
+        {totalPages > 1 && (
           <Pagination
-            pageCount={data.totalPages}
-            currentPage={currentPage}
-            onPageChange={setCurrentPage}
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
           />
         )}
-
-        <Link href="/notes/action/create" className={css.button}>
-          Create note +
-        </Link>
+        <Link href="/notes/action/create" className="btn">Create note</Link>
       </header>
 
-      {!isLoading && !isError && Array.isArray(data?.notes) && data.notes.length > 0 && (
-        <NoteList notes={data.notes} />
-      )}
-
+      {data?.notes.length > 0 && <NoteList notes={data.notes} />}
     </div>
   );
 }

@@ -1,7 +1,6 @@
 
-import { fetchNotes } from '../../../../lib/api';
-import type { FetchNotesResponse } from '../../../../lib/api';
-import Notes from './Notes.client';
+import { fetchServerNotes } from '@/lib/api/serverApi';
+import NotesClient from './Notes.client';
 import type { Metadata } from "next";
 
 interface Props {
@@ -33,26 +32,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-const NotesByTag = async ({ params }: Props) => {
+export default async function NotesPage({ params }: Props) {
   const { slug } = await params;
   const tag = slug[0] === 'All' ? undefined : slug[0];
 
-  let initialData: FetchNotesResponse = {
-    notes: [],
-    totalPages: 1,
-    currentPage: 1,
-  };
-  
-  try {
-    initialData = await fetchNotes(1, 12, tag);
-  } catch (error) {
-    console.error('Failed to fetch notes for tag:', tag, error);
-  }
-  return (
-    <div>
-      <Notes initialData={initialData} tag={tag} />
-    </div>
-  );
-};
+  const initialData = await fetchServerNotes('', 1, tag);
 
-export default NotesByTag;
+  return <NotesClient initialData={initialData} tag={tag} />;
+}

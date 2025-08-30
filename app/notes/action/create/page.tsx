@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import css from "./page.module.css";
 import  NoteForm  from "@/components/NoteForm/NoteForm";
-import { getTags } from "@/lib/api";
+import { getTags } from "@/lib/api/api";
 
 export const metadata: Metadata = {
   title: "Create Note | NoteHub",
