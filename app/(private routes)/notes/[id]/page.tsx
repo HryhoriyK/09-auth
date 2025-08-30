@@ -3,12 +3,12 @@ import { fetchNoteById } from "@/lib/api/clientApi";
 import NoteDetailsClient from "./NoteDetails.client";
 import type { Metadata } from "next";
 
-type Props = {
-  params: { id: string };
+type NoteDetailsProps = {
+  params: Promise<{ id: string }>;
 };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const {id} = params;
+export async function generateMetadata({ params }: NoteDetailsProps): Promise<Metadata> {
+  const {id} = await params;
   const note = await fetchNoteById(id);
 
   return {
@@ -30,8 +30,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-const NoteDetails = async ({ params }: Props) => {
-  const { id } = params;
+const NoteDetails = async ({ params }: NoteDetailsProps) => {
+  const { id } = await params;
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery({
