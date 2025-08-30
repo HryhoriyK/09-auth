@@ -6,5 +6,3 @@ export const nextServer = axios.create({
   baseURL,
   withCredentials: true,
 });
-
-console.log('➡️ BASE URL:', nextServer.defaults.baseURL);

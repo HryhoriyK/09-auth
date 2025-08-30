@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { api } from '../../api';
+import { api, ApiError } from '../../api';
 import { parse } from 'cookie';
 import { isAxiosError } from 'axios';
-import { logErrorResponse } from '../../_utils/utils';
 
 export async function GET(request: NextRequest) {
   try {
@@ -41,11 +40,11 @@ export async function GET(request: NextRequest) {
     }
     return NextResponse.redirect(new URL('/sign-in', request.url));
   } catch (error) {
-    if (isAxiosError(error)) {
-      logErrorResponse(error.response?.data);
-      return NextResponse.redirect(new URL('/sign-in', request.url));
+      return NextResponse.json(
+        {
+          error: (error as ApiError).response?.data?.error ?? (error as ApiError).message,
+        },
+        { status: (error as ApiError).status }
+      )
     }
-    logErrorResponse({ message: (error as Error).message });
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
-  }
 }

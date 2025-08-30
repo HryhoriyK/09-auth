@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { staticTags } from '@/lib/constants';
-import css from './SidebarNotes.module.css';
+import css from './default.module.css';
 
 export default function SidebarNotes() {
   return (
@@ -17,6 +17,6 @@ export default function SidebarNotes() {
           </Link>
         </li>
       ))}
-    </ul>
+      </ul>
   );
 }

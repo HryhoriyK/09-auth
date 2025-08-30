@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import css from "./page.module.css";
 import  NoteForm  from "@/components/NoteForm/NoteForm";
-import { getTags } from "@/lib/api/api";
 
 export const metadata: Metadata = {
   title: "Create Note | NoteHub",
@@ -21,17 +20,14 @@ export const metadata: Metadata = {
   },
 };
 
-const CreateNote = async () => {
-    const tags = await getTags();
+export default async function CreateNote() {
 
-    return (
-        <main className={css.main}>
-            <div className={css.container}>
-                <h1 className={css.title}>Create note</h1>
-                <NoteForm tags={tags} />
-            </div>
-        </main>
-    );
-};
-
-export default CreateNote;
+  return (
+    <main className={css.main}>
+      <div className={css.container}>
+        <h1 className={css.title}>Create note</h1>
+        <NoteForm />
+      </div>
+    </main>
+  );
+}
