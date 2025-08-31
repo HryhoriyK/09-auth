@@ -35,6 +35,7 @@ export const updateUser = async (payload: UpdateUserProps): Promise<User> => {
   return res.data;
 };
 
+// ✅ Notes
 export const fetchNotes = async ({
   search,
   page,
